@@ -2,10 +2,9 @@
 
 {% block content %}
 
-<h2>Login</h2>
-
+<main class="container col-6 center">
+  <h2>Login</h2>
 <hr/>
-
 <form method="POST" action="{{ url_for('login') }}">
     <div class="form-group">
       <input type="text" name="email" class="form-control" placeholder="user@domain.com" aria-describedby="helpId" />
@@ -23,5 +22,6 @@
     </div>
     <input type="submit" class="btn btn-info" value="Sign In" />
 </form>
+</main>
 
 {% endblock content %}

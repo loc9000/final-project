@@ -17,7 +17,7 @@ def home():
         return redirect(url_for('home'))
 
     if request.method == 'DELETE':
-        post = Post.query.filter_by(id=form_data.get('id')).first
+        post = Post.query.filter_by(id)
 
         db.session.delete(post)
         db.session.commit()
