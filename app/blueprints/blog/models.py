@@ -45,8 +45,9 @@ class Post(db.Model):
         self.id = default=uuid.uuid4().hex
 
     def __repr__(self):
-        return f'<Post: {self.body[30]}...>'
+        return f'<Post: {self.body[:30]}...>'
 
 @login.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+

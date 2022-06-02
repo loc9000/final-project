@@ -4,8 +4,9 @@ from datetime import datetime as dt
 from app.blueprints.blog.models import Post, User
 from app import db
 from flask_login import current_user
+import requests
 
-@app.route("/", methods=['GET', 'POST', 'DELETE'])
+@app.route("/", methods=['GET', 'POST'])
 def home():
 
     if request.method == 'POST':
@@ -15,18 +16,24 @@ def home():
         db.session.commit()
         flash('You have created a new post', 'info')
         return redirect(url_for('home'))
-
-    if request.method == 'DELETE':
-        post = Post.query.filter_by(id)
-
-        db.session.delete(post)
-        db.session.commit()
-
-        flash('Post deleted', 'danger')
-        return redirect(url_for('home'))
-
     
     return render_template('main/home.html', posts=[post.to_dict() for post in Post.query.order_by(Post.date_created.desc()).all()])
+
+@app.route('/delete/<id>')
+def delete_post(id):
+    post_to_delete = Post.query.get(id)
+    print(post_to_delete)
+
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+        flash('Post deleted', 'warning')
+        return render_template('main/home.html', posts=[post.to_dict() for post in Post.query.order_by(Post.date_created.desc()).all()])
+        
+        
+    except:
+        flash('There was a problem deleting the post', 'warning')
+        return render_template('main/home.html', posts=[post.to_dict() for post in Post.query.order_by(Post.date_created.desc()).all()])
 
 @app.route("/profile", methods=['GET', 'POST'])
 def profile():
@@ -56,4 +63,7 @@ def profile():
     
 @app.route("/contact")
 def contact():
-    return "Contact Page"
+    return render_template('main/contact.html')
+
+
+

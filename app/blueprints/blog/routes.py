@@ -5,7 +5,7 @@ from app import db
 
 @app.route("/users")
 def user_list():
-    return "Users Page"
+    return render_template('users/list.html')
 
 @app.route("/users/<int:id>")
 def user_single(id):
@@ -70,3 +70,4 @@ def blog_profile():
 
         flash('You have created a new post', 'info')
         return redirect(url_for('profile'))
+

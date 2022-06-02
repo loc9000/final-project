@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h3>
+    Cart
+    <span class="float-right">
+        <form action="{{ url_for('shop_checkout') }}" method="post">
+            <input id="checkout-button" type="submit" class="btn btn-primary" value="Checkout">
+        </form>
+    </span>
+</h3>
+<hr>
+
+<div class="card shopping-cart">
+    <div class="card-header bg-dark text-light">
+        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        Shopping Cart
+        <a href="" class="btn btn-outline-info btn-sm pull-right">Continue Shopping</a>
+        <div class="clearfix"></div>
+    </div>
+    <div class="card-body">
+
+{% endblock content %}
