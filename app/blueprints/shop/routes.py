@@ -27,7 +27,17 @@ def shop_single(id):
 
 @app.route("/shop/cart")
 def shop_cart():
-    return render_template('/shop/cart.html')
+    cart_items=[]
+    for item in Cart.query.filter_by(user_id=current_user.get_id()).all():
+        stripe_product = stripe.Product.retrieve(item.product_id)
+        price = stripe.Price.retrieve(stripe_product['default_price'])['unit_amount'] / 100
+        product_dict = {
+            'info': stripe_product,
+            'price': f"{price:,.2f}",
+            'quantity': item.quantity
+        }
+        cart_items.append(product_dict)
+    return render_template('/shop/cart.html', cart=cart_items)
 
 @app.route('/shop/cart/add/<product_id>')
 def shop_cart_add(product_id):
