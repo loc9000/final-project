@@ -21,6 +21,10 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login.init_app(app)
 
+    login.login_view = 'login'
+    login.login_message = "You do not have access to this page. Please log in."
+    login.login_message_category = 'danger'
+
 
     with app.app_context():
         from app.blueprints.main import bp as main_bp

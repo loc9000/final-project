@@ -1,5 +1,5 @@
 from flask import current_app as app, render_template, flash, redirect, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 import stripe
 from .models import Cart
 from app import db
@@ -7,6 +7,7 @@ from app import db
 stripe.api_key = app.config.get('STRIPE_SK')
 
 @app.route("/shop")
+@login_required
 def shop_list():
     products=[]
     for product in stripe.Product.list()['data']:
@@ -26,6 +27,7 @@ def shop_single(id):
     return "Shop Single Page"
 
 @app.route("/shop/cart")
+@login_required
 def shop_cart():
     cart_items=[]
     for item in Cart.query.filter_by(user_id=current_user.get_id()).all():
@@ -61,7 +63,33 @@ def shop_cart_add(product_id):
     flash('You have added that product successfully', 'primary')
     return redirect(url_for('shop_list'))
 
-@app.route("/shop/checkout")
+@app.route("/shop/checkout", methods=['POST'])
 def shop_checkout():
-    return "shop checkout"
+    items =[]
+    user_cart = Cart.query.filter_by(user_id=current_user.get_id()).all()
+    for item in user_cart:
+        stripe_product = stripe.Product.retrieve(item.product_id)
+        product_dict = {
+            'price': stripe_product['default_price'],
+            'quantity': item.quantity
+        }
+        items.append(product_dict)
+
+    try:
+        
+        checkout_session = stripe.checkout.Session.create(
+            line_items=items,
+            mode='payment',
+            success_url='http://127.0.0.1:5000/shop/cart',
+            cancel_url='http://127.0.0.1:5000/shop/cart',
+        )
+        for item in user_cart:
+            db.session.delete(item)
+        db.session.commit()
+        flash('Your payment was successful. Thanks for shopping!', 'success')
+    except Exception as e:
+        return str(e)
+
+    flash('Your payment was unsuccessful. Please try again.', 'danger')
+    return redirect(checkout_session.url)
     

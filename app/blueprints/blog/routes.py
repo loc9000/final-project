@@ -1,9 +1,10 @@
 from flask import current_app as app, render_template, request, redirect, url_for, flash
 from .models import User, Post
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 
 @app.route("/users")
+@login_required
 def user_list():
     return render_template('users/list.html')
 
@@ -61,6 +62,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/blog/update', methods=['POST'])
+@login_required
 def blog_profile():
     if request.method == 'POST':
         data = request.form.get('blog_post')
